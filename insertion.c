@@ -1,5 +1,4 @@
-/* In essence an insertion sort - BWallner 2021 */
-
+/* Straight selection sort (Knuth 5.2.3 working with lowest elem) - BWallner 2021 */
 
 #include <stdio.h>
 #include <stdlib.h>
