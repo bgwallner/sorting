@@ -4,8 +4,17 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define N 20        /* Array size */
-#define MAX 100000  /* Just some large number */
+#define N 8         /* Array size */
+#define MAX 65535   /* Just some large number */
+
+/* Declarations */
+static void print_array( unsigned short a[], unsigned short size,
+                        unsigned short index1, unsigned short index2,
+                        unsigned char with_index );
+static void sort_inplace( unsigned short a[], unsigned short size );
+static void test_order( unsigned short a[], unsigned short size  );
+
+/* Static functions */
 
 static void sort_inplace( unsigned short a[], unsigned short size )
 {
@@ -16,8 +25,8 @@ static void sort_inplace( unsigned short a[], unsigned short size )
 	
 	for( current = 0; current < (size-1); current++)
 	{
+		leap = (size-1);
 		smallest = MAX;
-		leap = (N-1);
 		/* Iterate leap from last element to current */
 		while( leap > current )
 		{
@@ -30,22 +39,47 @@ static void sort_inplace( unsigned short a[], unsigned short size )
 			}
 			leap--;
 		}
+
+        /* Print data before switching */
+        printf("\n");
+		print_array( &a[0], size, index_s, current, 1 );
 		
 		if( a[current] > smallest )
 		{
-			/*  Exchange current elment with smallest found */
+			/*  Exchange current element with smallest found */
 			a[index_s] = a[current];
 			a[current] = smallest;
 		}
+		print_array( &a[0], size, 0, 0, 0 );
 	}
 }
 
-static void print_array( unsigned short a[], unsigned short size )
+static void print_array( unsigned short a[], unsigned short size,
+                         unsigned short index1, unsigned short index2,
+                         unsigned char with_index )
 {
 	unsigned short i;
 	for( i = 0; i < size; i++)
 	{
-		printf("a[%d]=%d\t", i, a[i]);
+		if( 1 == with_index)
+		{
+			if( i == index2 )
+			{
+				printf("(c)a[%d]=%d\t", i, a[i]);
+			}
+			else if( i == index1 )
+			{
+				printf("(s)a[%d]=%d\t", i, a[i]);
+			}
+			else
+			{
+				printf("   a[%d]=%d\t", i, a[i]);
+			}
+		}
+		else
+		{
+			printf("   a[%d]=%d\t", i, a[i]);
+		}
 	}
 	printf("\n");
 }
@@ -66,41 +100,47 @@ static void test_order( unsigned short a[], unsigned short size  )
 	}
 	
 	printf("\n");
+	printf("TESTING RESULT\n");
+	printf("--------------\n");
 	if( 1 == failed )
 	{
-		printf("Sorting FAILED\n");
+		printf("Sorting: FAILED\n");
 	}
 	else
 	{
-		printf("Sorting SUCCESS\n");
+		printf("Sorting: SUCCESS\n");
 	}
+	printf("\n");
 }
 
+/* Global functions */
 int main(void)
 {
 	unsigned short a[N];
 	unsigned short i;
 	time_t t;
+
+    printf("\n");
+	printf("Program START...\n");
+	printf("\n");
+	printf("(c) current element (s) smallest element found in range [(c)+1 <- NMAX]\n");
 	
 	/* Generate sequence of random numbers */
-	/* between 0 and 49.                   */
+	/* between 0 and 99.                   */
 	srand((unsigned) time(&t));
 	for( i=1; i<=N; i++)
 	{
-		a[N-i] = rand() % 50; //(unsigned int)i;
+		a[N-i] = rand() % 100; //(unsigned int)i;
 	}
-	
-	/* Print original array */
-	print_array( &a[0], N );
-	
+
 	/* Sort array */
 	sort_inplace( &a[0], N );
 	
-	/* Print sorted array */
-	print_array( &a[0], N );
-	
 	/* Test increasing order */
 	test_order( &a[0], N );
+
+	printf("Program END\n");
+	printf("\n");
 
 	return 0;
 }
