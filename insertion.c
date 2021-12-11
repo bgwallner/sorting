@@ -12,6 +12,7 @@ static void print_array( unsigned short a[], unsigned short size,
                         unsigned short index1, unsigned short index2,
                         unsigned char with_index );
 static void sort_inplace( unsigned short a[], unsigned short size );
+static void sort_not_inplace( unsigned short a[], unsigned short sorted[], unsigned short size );
 static void test_order( unsigned short a[], unsigned short size  );
 
 /* Static functions */
@@ -54,6 +55,48 @@ static void sort_inplace( unsigned short a[], unsigned short size )
 	}
 }
 
+static void sort_not_inplace( unsigned short a[], unsigned short sorted[], unsigned short size )
+{
+	unsigned short current;
+	unsigned short leap;
+	unsigned short index_s;
+	unsigned int smallest;
+
+	current=0;
+	while( current < size )
+	{
+		leap = 0;
+		smallest = MAX;
+		/* Iterate leap from first element to last */
+		while( leap < size )
+		{
+			/* Check if leap element is smaller than smallest */
+			if( a[leap] < smallest )
+			{
+				/* Update smallest and save index  */
+				smallest = a[leap];
+				index_s = leap;
+			}
+			leap++;
+		}
+
+        /* Original array */
+        printf("\n");
+		print_array( &a[0], size, 0, 0, 0 );
+
+		/*  Assign MAX to found smallest element */
+		a[index_s] = MAX;
+		sorted[current] = smallest;
+
+		/* Print modified original and sorted array */
+		print_array( &a[0], size, 0, 0, 0 );
+		print_array( &sorted[0], size, 0, 0, 0 );
+
+        /* New iteration */
+		current++;
+	}
+}
+
 static void print_array( unsigned short a[], unsigned short size,
                          unsigned short index1, unsigned short index2,
                          unsigned char with_index )
@@ -77,8 +120,14 @@ static void print_array( unsigned short a[], unsigned short size,
 			}
 		}
 		else
-		{
-			printf("   a[%d]=%d\t", i, a[i]);
+		{   if( MAX == a[i])
+			{
+				printf("   a[%d]=0x%X\t", i, a[i]);
+			}
+			else
+			{
+				printf("   a[%d]=%d\t", i, a[i]);
+			}
 		}
 	}
 	printf("\n");
@@ -116,7 +165,9 @@ static void test_order( unsigned short a[], unsigned short size  )
 /* Global functions */
 int main(void)
 {
-	unsigned short a[N];
+	unsigned short a[N] = {0};
+	unsigned short b[N] = {0};
+	unsigned short s[N] = {0};
 	unsigned short i;
 	time_t t;
 
@@ -128,14 +179,24 @@ int main(void)
 	/* Generate sequence of random numbers */
 	/* between 0 and 99.                   */
 	srand((unsigned) time(&t));
-	for( i=1; i<=N; i++)
+	for( i=0; i<N; i++)
 	{
-		a[N-i] = rand() % 100; //(unsigned int)i;
+		a[i] = rand() % 100;
+		b[i] = a[i];
 	}
 
-	/* Sort array */
+	/* Sort array in-place */
 	sort_inplace( &a[0], N );
-	
+
+	/* Test increasing order */
+	test_order( &a[0], N );
+
+	printf("\n");
+	printf("find smallest value and add to new array, range [0->NMAX] in every iteration\n");
+
+    /* Sorting not in-place */
+	sort_not_inplace( &b[0], &s[0], N);
+
 	/* Test increasing order */
 	test_order( &a[0], N );
 
